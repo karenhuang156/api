@@ -7,6 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,11 +34,15 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
     private RepoAdapter repoAdapter;
+    private EditText input;
+    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,21 +51,43 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = (RecyclerView)findViewById(R.id.rv_repolist);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
+        input = (EditText)findViewById(R.id.et_user);
+        button = (Button)findViewById(R.id.b_go);
 
-        asdfAsyncTask asdf = new asdfAsyncTask();
-        asdf.execute();
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String in = input.getText().toString();
+                new asdfAsyncTask().execute(in);
+            }
+        });
+        input.setOnEditorActionListener(new EditText.OnEditorActionListener(){
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if(i == EditorInfo.IME_ACTION_SEND) {
+                    button.performClick();
+                    System.out.println("u sumbitted");
+                    return true;
+                }
+                System.out.println("action");
+                return false;
+            }
+
+        });
     }
 
-    class asdfAsyncTask extends AsyncTask<Void, Void, String> {
+    class asdfAsyncTask extends AsyncTask<String, Void, String> {
 
         @Override
-        protected String doInBackground(Void... voids) {
+        protected String doInBackground(String... strings) {
+            String user = strings[0];
+            System.out.println(user);
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("https://api.github.com")
                     .build();
-            UberService service = retrofit.create(UberService.class);
+            GitHubService service = retrofit.create(GitHubService.class);
 
-            Call<ResponseBody> getProductsCall = service.getProducts();
+            Call<ResponseBody> getProductsCall = service.getRepos(user);
             ResponseBody responseBody = null;
             String response = "";
 
@@ -116,9 +148,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public interface UberService {
-        @GET("/users/amisrs/repos")
-        Call<ResponseBody> getProducts();
+    public interface GitHubService {
+        @GET("/users/{user}/repos")
+        Call<ResponseBody> getRepos(@Path(value="user", encoded=true) String user);
     }
 
 

@@ -8,11 +8,31 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.gavin.uberapitest.MainActivity">
+    <EditText
+        android:id="@+id/et_user"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="80dp"
+        android:imeOptions="actionSend"
+    >
+    </EditText>
+    <Button
+        android:id="@+id/b_go"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:text="SEARCH"
+        android:textColor="#FFFFFF"
+        android:background="@color/colorAccent"
+    >
+    </Button>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_repolist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/et_user"
         android:scrollbars="vertical">
 
     </android.support.v7.widget.RecyclerView>
