@@ -1,5 +1,7 @@
 package com.example.gavin.uberapitest;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +16,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.acl.Owner;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -93,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("owner: " + r.getOwner().getLogin());
                 }
 
+
+
                 repoAdapter = new RepoAdapter(repoArrayList);
                 recyclerView.setAdapter(repoAdapter);
 
@@ -108,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
     public interface UberService {
         @GET("/users/amisrs/repos")
         Call<ResponseBody> getProducts();

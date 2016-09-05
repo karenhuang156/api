@@ -24,5 +24,6 @@ public class Owner {
     public String getLogin() {
         return login;
     }
+    public String getAvatar_url() { return avatar_url; }
 }
 
