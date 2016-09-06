@@ -43,6 +43,7 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.RepoViewHolder
         return repoArrayList.size();
     }
 
+
     public static class RepoViewHolder extends RecyclerView.ViewHolder {
         public TextView tvRepo;
         public TextView tvOwner;

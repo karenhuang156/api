@@ -1,5 +1,6 @@
 package com.example.gavin.uberapitest;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -13,6 +14,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 String in = input.getText().toString();
                 new asdfAsyncTask().execute(in);
             }
@@ -96,9 +99,16 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("should print response next");
                 System.out.println();
                 Response asdf = getProductsCall.execute();
-                responseBody = (ResponseBody)asdf.body();
-                response = responseBody.string();
-                System.out.println(response);
+                responseBody = (ResponseBody) asdf.body();
+                if (responseBody == null){
+                    System.out.println("responsebody is null");
+                    //recyclerView.setAdapter(null);
+                }
+                else {
+                    response = responseBody.string();
+
+                    // System.out.println(response);
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -110,38 +120,57 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            if(s.isEmpty()) {
+                recyclerView.setAdapter(null);
+                Context context = getApplicationContext();
+                String text = "User does not exist";
+                int duration = Toast.LENGTH_SHORT;
 
-            try {
-                System.out.println("next is response");
-                System.out.println("here is resopnse: " + s);
-                JSONArray jsonArray = new JSONArray(s);
-                JSONObject jsonObject;
-                String name;
-                GsonBuilder gsonBuilder = new GsonBuilder();
-                //gsonBuilder.registerTypeAdapter(Owner.class, new OwnerDeserializer());
-                Gson gson = gsonBuilder.create();
-                Repo[] repos = gson.fromJson(s, Repo[].class);
-                ArrayList<Repo> repoArrayList = new ArrayList<>();
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+                System.out.println("json obj null found");
+            }
+                else{
+                try {
+                    System.out.println("next is response");
+                    System.out.println("here is resopnse: " + s);
+                    JSONArray jsonArray = new JSONArray(s);
+                    JSONObject jsonObject;
+                    String name;
+                    GsonBuilder gsonBuilder = new GsonBuilder();
+                    //gsonBuilder.registerTypeAdapter(Owner.class, new OwnerDeserializer());
+                    Gson gson = gsonBuilder.create();
+                    Repo[] repos = gson.fromJson(s, Repo[].class);
+                    ArrayList<Repo> repoArrayList = new ArrayList<>();
+                    if(repos.length == 0){
+                        Context context = getApplicationContext();
+                        String text = "User has no repositories";
+                        int duration = Toast.LENGTH_SHORT;
 
-                for(Repo r : repos) {
-                    repoArrayList.add(r);
-                    System.out.println("name: " + r.getName());
-                    System.out.println("a " + r.getOwner().toString());
-                    System.out.println("owner: " + r.getOwner().getLogin());
-                }
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.show();
+                        System.out.println("user has no repos");
+                    }
+                    for (Repo r : repos) {
+                        repoArrayList.add(r);
+                        System.out.println("name: " + r.getName());
+                        System.out.println("a " + r.getOwner().toString());
+                        System.out.println("owner: " + r.getOwner().getLogin());
+                    }
 
 
-
-                repoAdapter = new RepoAdapter(repoArrayList);
-                recyclerView.setAdapter(repoAdapter);
+                    repoAdapter = new RepoAdapter(repoArrayList);
+                    recyclerView.setAdapter(repoAdapter);
 
 
                 /*for(int i=0; i<jsonArray.length(); i++) {
                     jsonObject = jsonArray.getJSONObject(i);
                     Repo repo = gson.fromJson(jsonObject.toString(), Repo.class);
                 }*/
-            } catch (JSONException e) {
-                e.printStackTrace();
+                } catch (JSONException e) {
+
+                    e.printStackTrace();
+                }
             }
 
 
