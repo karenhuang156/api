@@ -9,7 +9,8 @@ public class Owner {
     private String avatar_url;
     private String gravatar_id;
     private String url;
-    private String html_url;private String followers_url;
+    private String html_url;
+    private String followers_url;
     private String following_url;
     private String gists_url;
     private String starred_url;

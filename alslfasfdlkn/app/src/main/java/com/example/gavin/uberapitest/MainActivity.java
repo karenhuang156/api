@@ -1,8 +1,10 @@
 package com.example.gavin.uberapitest;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,7 +14,10 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,26 +44,44 @@ import retrofit2.http.Query;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
+    private RelativeLayout searchLayout;
     private LinearLayoutManager linearLayoutManager;
+    private CoordinatorLayout coordinatorLayout;
     private RepoAdapter repoAdapter;
     private EditText input;
     private Button button;
+    private ProgressBar spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        searchLayout = (RelativeLayout)findViewById(R.id.rl_search);
         recyclerView = (RecyclerView)findViewById(R.id.rv_repolist);
+        coordinatorLayout = (CoordinatorLayout)findViewById(R.id.cl_results);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         input = (EditText)findViewById(R.id.et_user);
         button = (Button)findViewById(R.id.b_go);
+        spinner = (ProgressBar)findViewById(R.id.pb_spin);
+
+        spinner.setVisibility(View.GONE);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                recyclerView.setAdapter(null);
+                spinner.setVisibility(View.VISIBLE);
                 String in = input.getText().toString();
                 new asdfAsyncTask().execute(in);
+            }
+        });
+        coordinatorLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("clicked recycle");
+                searchLayout.animate()
+                        .translationY(-searchLayout.getHeight());
             }
         });
         input.setOnEditorActionListener(new EditText.OnEditorActionListener(){
@@ -96,9 +119,16 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("should print response next");
                 System.out.println();
                 Response asdf = getProductsCall.execute();
-                responseBody = (ResponseBody)asdf.body();
-                response = responseBody.string();
-                System.out.println(response);
+                responseBody = (ResponseBody) asdf.body();
+                if (responseBody == null){
+                    System.out.println("responsebody is null");
+                    //recyclerView.setAdapter(null);
+                }
+                else {
+                    response = responseBody.string();
+
+                    // System.out.println(response);
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -110,40 +140,55 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            if(s.isEmpty()) {
+                recyclerView.setAdapter(null);
+                Context context = getApplicationContext();
+                String text = "User does not exist";
+                int duration = Toast.LENGTH_SHORT;
 
-            try {
-                System.out.println("next is response");
-                System.out.println("here is resopnse: " + s);
-                JSONArray jsonArray = new JSONArray(s);
-                JSONObject jsonObject;
-                String name;
-                GsonBuilder gsonBuilder = new GsonBuilder();
-                //gsonBuilder.registerTypeAdapter(Owner.class, new OwnerDeserializer());
-                Gson gson = gsonBuilder.create();
-                Repo[] repos = gson.fromJson(s, Repo[].class);
-                ArrayList<Repo> repoArrayList = new ArrayList<>();
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+                System.out.println("json obj null found");
+            }
+            else{
+                try {
+                    System.out.println("next is response");
+                    System.out.println("here is resopnse: " + s);
+                    JSONArray jsonArray = new JSONArray(s);
+                    JSONObject jsonObject;
+                    String name;
+                    GsonBuilder gsonBuilder = new GsonBuilder();
+                    //gsonBuilder.registerTypeAdapter(Owner.class, new OwnerDeserializer());
+                    Gson gson = gsonBuilder.create();
+                    Repo[] repos = gson.fromJson(s, Repo[].class);
+                    ArrayList<Repo> repoArrayList = new ArrayList<>();
+                    if(repos.length == 0){
+                        Context context = getApplicationContext();
+                        String text = "User has no repositories";
+                        int duration = Toast.LENGTH_SHORT;
 
-                for(Repo r : repos) {
-                    repoArrayList.add(r);
-                    System.out.println("name: " + r.getName());
-                    System.out.println("a " + r.getOwner().toString());
-                    System.out.println("owner: " + r.getOwner().getLogin());
-                }
-
-
-
-                repoAdapter = new RepoAdapter(repoArrayList);
-                recyclerView.setAdapter(repoAdapter);
-
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.show();
+                        System.out.println("user has no repos");
+                    }
+                    for (Repo r : repos) {
+                        repoArrayList.add(r);
+                        System.out.println("name: " + r.getName());
+                        System.out.println("a " + r.getOwner().toString());
+                        System.out.println("owner: " + r.getOwner().getLogin());
+                    }
+                    repoAdapter = new RepoAdapter(repoArrayList);
+                    recyclerView.setAdapter(repoAdapter);
 
                 /*for(int i=0; i<jsonArray.length(); i++) {
                     jsonObject = jsonArray.getJSONObject(i);
                     Repo repo = gson.fromJson(jsonObject.toString(), Repo.class);
                 }*/
-            } catch (JSONException e) {
-                e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-
+            spinner.setVisibility(View.GONE);
 
         }
     }

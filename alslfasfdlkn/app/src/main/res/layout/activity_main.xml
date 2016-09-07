@@ -3,38 +3,77 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.gavin.uberapitest.MainActivity">
+    <RelativeLayout
+        android:id="@+id/rl_search"
+        android:layout_width="match_parent"
+        android:layout_height="77dp"
+        android:background="#EEEEEE"
+        android:elevation="2dp">
     <EditText
         android:id="@+id/et_user"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="match_parent"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="80dp"
+        android:layout_alignParentLeft="true"
+        android:gravity="center_vertical"
         android:imeOptions="actionSend"
+        android:inputType="text"
+        android:maxLines="1"
+        android:background="@null"
+        android:textSize="30dp"
     >
     </EditText>
     <Button
         android:id="@+id/b_go"
         android:layout_width="80dp"
-        android:layout_height="40dp"
+        android:layout_height="match_parent"
         android:layout_alignParentRight="true"
-        android:text="SEARCH"
+        android:gravity="center"
+        android:text="Search"
         android:textColor="#FFFFFF"
         android:background="@color/colorAccent"
+        style="?android:attr/borderlessButtonStyle"
     >
     </Button>
+    </RelativeLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_repolist"
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/cl_results"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/et_user"
-        android:scrollbars="vertical">
+        android:layout_below="@id/rl_search">
 
-    </android.support.v7.widget.RecyclerView>
+        <ProgressBar
+            android:id="@+id/pb_spin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_gravity="center"/>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_repolist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/et_user"
+            android:scrollbars="vertical">
+
+        </android.support.v7.widget.RecyclerView>
+<!--
+        <android.support.design.widget.FloatingActionButton
+            android:layout_height="40dp"
+            android:layout_width="40dp"
+            app:layout_anchor="@id/rv_repolist"
+            app:layout_anchorGravity="bottom|right"
+            android:layout_margin="16dp"
+            >
+        </android.support.design.widget.FloatingActionButton>
+-->
+    </android.support.design.widget.CoordinatorLayout>
 
 </RelativeLayout>
