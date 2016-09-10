@@ -1,6 +1,7 @@
 package com.example.gavin.uberapitest;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -34,11 +35,20 @@ import java.security.acl.Owner;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -64,9 +74,16 @@ public class MainActivity extends AppCompatActivity {
         input = (EditText)findViewById(R.id.et_user);
         button = (Button)findViewById(R.id.b_go);
         spinner = (ProgressBar)findViewById(R.id.pb_spin);
+        Button logButton = (Button)findViewById(R.id.b_log);
 
         spinner.setVisibility(View.GONE);
-
+        logButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), OAuthActivity.class);
+                startActivity(intent);
+            }
+        });
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -106,15 +123,25 @@ public class MainActivity extends AppCompatActivity {
             String user = strings[0];
             System.out.println(user);
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.github.com")
+                    .baseUrl("https://api.github.com/")
                     .build();
             GitHubService service = retrofit.create(GitHubService.class);
+            PostRepo postRepo = retrofit.create(PostRepo.class);
+            String json = "{ \"name\": \"noheader\", \"auto_init\": true, \"private\": false, \"gitignore_template\": \"nanoc\"}";
+            RequestBody rb = RequestBody.create(MediaType.parse("application/json"), json);
+            Call<ResponseBody> createRepoCall = postRepo.createRepo(rb, "token 1ac14f233ade3aa232e5d7cbb8f9c6e932f4e328");
 
-            Call<ResponseBody> getProductsCall = service.getRepos(user);
+            Call<ResponseBody> getProductsCall = service.getRepos(user, "token affaf6982af565e1df74aeb815159a6e479b4926");
             ResponseBody responseBody = null;
             String response = "";
 
             try {
+                System.out.println("created repo");
+                Response aaa = createRepoCall.execute();
+                //System.out.println(aaa.errorBody().string());
+                //ResponseBody rb = (ResponseBody)aaa.body();
+
+                //System.out.println(rb.string());
 
                 System.out.println("should print response next");
                 System.out.println();
@@ -194,8 +221,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public interface GitHubService {
-        @GET("/users/{user}/repos")
-        Call<ResponseBody> getRepos(@Path(value="user", encoded=true) String user);
+        @GET("users/{user}/repos")
+        Call<ResponseBody> getRepos(@Path(value="user", encoded=true) String user,
+                                    @Header("Authorization") String auth);
+    }
+
+    public interface PostRepo {
+        //@Headers("Content-Type: application/json")
+        @POST("user/repos")
+        Call<ResponseBody> createRepo(@Body RequestBody body,
+                                @Header("Authorization") String auth);
     }
 
 

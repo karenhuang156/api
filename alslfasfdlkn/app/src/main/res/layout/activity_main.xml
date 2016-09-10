@@ -32,7 +32,6 @@
         android:id="@+id/b_go"
         android:layout_width="80dp"
         android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
         android:gravity="center"
         android:text="Search"
         android:textColor="#FFFFFF"
@@ -40,6 +39,21 @@
         style="?android:attr/borderlessButtonStyle"
     >
     </Button>
+
+        <Button
+        android:id="@+id/b_log"
+        android:layout_alignParentRight="true"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="LOGIN"
+        android:textColor="#FFFFFF"
+        android:background="@color/colorAccent"
+        style="?android:attr/borderlessButtonStyle"
+        >
+    </Button>
+
+
     </RelativeLayout>
 
     <android.support.design.widget.CoordinatorLayout
