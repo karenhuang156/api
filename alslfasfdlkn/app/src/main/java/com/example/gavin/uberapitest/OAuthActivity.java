@@ -11,6 +11,8 @@ import android.webkit.WebViewClient;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -106,12 +108,22 @@ public class OAuthActivity extends AppCompatActivity {
                 a = (ResponseBody)s.body();
                 response = a.string();
                 System.out.println(response);
-
+                Pattern codePattern = Pattern.compile("=(.*?)&");
+                Matcher codeMatcher = codePattern.matcher(response);
+                codeMatcher.find();
+                String access = codeMatcher.group(1);
+                AuthPrefs.ACCESS_TOKEN = access;
+                System.out.println(AuthPrefs.ACCESS_TOKEN);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             return response;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            finish();
         }
     }
     public interface PostCode {
