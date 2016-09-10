@@ -129,9 +129,9 @@ public class MainActivity extends AppCompatActivity {
             PostRepo postRepo = retrofit.create(PostRepo.class);
             String json = "{ \"name\": \"noheader\", \"auto_init\": true, \"private\": false, \"gitignore_template\": \"nanoc\"}";
             RequestBody rb = RequestBody.create(MediaType.parse("application/json"), json);
-            Call<ResponseBody> createRepoCall = postRepo.createRepo(rb, "token 1ac14f233ade3aa232e5d7cbb8f9c6e932f4e328");
+            Call<ResponseBody> createRepoCall = postRepo.createRepo(rb, "token "+AuthPrefs.ACCESS_TOKEN);
 
-            Call<ResponseBody> getProductsCall = service.getRepos(user, "token affaf6982af565e1df74aeb815159a6e479b4926");
+            Call<ResponseBody> getProductsCall = service.getRepos(user, "token "+AuthPrefs.ACCESS_TOKEN);
             ResponseBody responseBody = null;
             String response = "";
 
