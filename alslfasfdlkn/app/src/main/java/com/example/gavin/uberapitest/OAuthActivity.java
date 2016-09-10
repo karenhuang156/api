@@ -9,6 +9,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -19,6 +21,7 @@ import retrofit2.Retrofit;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 public class OAuthActivity extends AppCompatActivity {
 
@@ -60,8 +63,8 @@ public class OAuthActivity extends AppCompatActivity {
                 } else if(url.contains(accessCodeFragment)) {
                     // the GET request contains an authorization code
                     String accessCode = url.substring(url.indexOf(accessCodeFragment));
-                    AuthPrefs.CODE = accessCode;
-                    CODE = accessCode;
+                    AuthPrefs.CODE = accessCode.substring(5);
+                    CODE = AuthPrefs.CODE;
                     System.out.println(accessCode);
                     new getCodeTask().execute();
 
@@ -89,7 +92,13 @@ public class OAuthActivity extends AppCompatActivity {
             PostCode postCodeService = retrofit.create(PostCode.class);
            // String request = "{ \"code\":"+AuthPrefs.CODE+"\", \"client_id\":\""+CLIENT_ID+"\", \"client_secret\":\""+CLIENT_SECRET+"\" }";
             //RequestBody rb = RequestBody.create(MediaType.parse("application/json"), request);
-            Call<ResponseBody> postCodeCall = postCodeService.getToken(CLIENT_ID,CLIENT_SECRET,CODE);
+            Map<String, String> data = new HashMap<>();
+            data.put("code",CODE);
+            data.put("client_secret",CLIENT_SECRET);
+            data.put("client_id",CLIENT_ID);
+
+            System.out.println(data.toString());
+            Call<ResponseBody> postCodeCall = postCodeService.getToken(data);
             String response = "";
             try {
                 ResponseBody a = null;
@@ -107,7 +116,8 @@ public class OAuthActivity extends AppCompatActivity {
     }
     public interface PostCode {
         @POST("login/oauth/access_token")
-        Call<ResponseBody> getToken(@Query("client_id") String client_id, @Query("client_secret") String client_secret, @Query("code") String code);
+        Call<ResponseBody> getToken(@QueryMap(encoded=true) Map<String,String> params);
+
     }
 
 }
