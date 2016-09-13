@@ -31,7 +31,7 @@ public class OAuthActivity extends AppCompatActivity {
     public static String OAUTH_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token/";
 
     public static String CLIENT_ID = "c318b3ca6bb70166e877";
-    public static String CLIENT_SECRET = "f54ac3c76cc77e5a5cd7b1e6a1e9b6f7ade301b8";
+    public static String CLIENT_SECRET = "b2fd72d852872141163077e89d19d40bd42c5295";
     public static String CALLBACK_URL = "http://127.0.0.1/";
     public static String CODE = "";
     public static final String URL = OAUTH_URL + "?client_id=" + CLIENT_ID;
@@ -123,7 +123,9 @@ public class OAuthActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
+
             finish();
+
         }
     }
     public interface PostCode {

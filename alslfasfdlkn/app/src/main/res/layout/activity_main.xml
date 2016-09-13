@@ -11,6 +11,7 @@
         android:layout_height="77dp"
         android:background="#EEEEEE"
         android:elevation="2dp">
+
     <EditText
         android:id="@+id/et_user"
         android:layout_width="match_parent"
@@ -30,6 +31,7 @@
     </EditText>
     <Button
         android:id="@+id/b_go"
+        android:layout_alignParentRight="true"
         android:layout_width="80dp"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -40,7 +42,8 @@
     >
     </Button>
 
-        <Button
+
+    <Button
         android:id="@+id/b_log"
         android:layout_alignParentRight="true"
         android:layout_width="80dp"
@@ -52,6 +55,7 @@
         style="?android:attr/borderlessButtonStyle"
         >
     </Button>
+
 
 
     </RelativeLayout>

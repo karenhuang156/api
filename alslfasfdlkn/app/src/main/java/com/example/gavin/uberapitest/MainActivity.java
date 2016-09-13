@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import okhttp3.MediaType;
+import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private RepoAdapter repoAdapter;
     private EditText input;
     private Button button;
+    private Button logButton;
     private ProgressBar spinner;
 
     @Override
@@ -74,16 +76,22 @@ public class MainActivity extends AppCompatActivity {
         input = (EditText)findViewById(R.id.et_user);
         button = (Button)findViewById(R.id.b_go);
         spinner = (ProgressBar)findViewById(R.id.pb_spin);
-        Button logButton = (Button)findViewById(R.id.b_log);
+        logButton = (Button)findViewById(R.id.b_log);
 
+        //button.setVisibility(View.GONE);
         spinner.setVisibility(View.GONE);
+
         logButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), OAuthActivity.class);
                 startActivity(intent);
+                logButton.setVisibility(View.GONE);
+
             }
+
         });
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -126,22 +134,26 @@ public class MainActivity extends AppCompatActivity {
                     .baseUrl("https://api.github.com/")
                     .build();
             GitHubService service = retrofit.create(GitHubService.class);
+
             PostRepo postRepo = retrofit.create(PostRepo.class);
-            String json = "{ \"name\": \"noheader\", \"auto_init\": true, \"private\": false, \"gitignore_template\": \"nanoc\"}";
+            String json = "{ \"name\": \"noheaders\", \"auto_init\": true, \"private\": false, \"gitignore_template\": \"nanoc\"}";
+
             RequestBody rb = RequestBody.create(MediaType.parse("application/json"), json);
-            Call<ResponseBody> createRepoCall = postRepo.createRepo(rb, "token "+AuthPrefs.ACCESS_TOKEN);
+
+            Call<ResponseBody> createRepoCall = postRepo.createRepo(rb, "token " + AuthPrefs.ACCESS_TOKEN);
 
             Call<ResponseBody> getProductsCall = service.getRepos(user, "token "+AuthPrefs.ACCESS_TOKEN);
             ResponseBody responseBody = null;
+            ResponseBody responseBody1 = null;
             String response = "";
 
             try {
                 System.out.println("created repo");
                 Response aaa = createRepoCall.execute();
                 //System.out.println(aaa.errorBody().string());
-                //ResponseBody rb = (ResponseBody)aaa.body();
-
-                //System.out.println(rb.string());
+               // ResponseBody rb1 = (ResponseBody)aaa.body();
+                //responseBody1 = (ResponseBody) aaa.body();
+               // System.out.println(rb1.string());
 
                 System.out.println("should print response next");
                 System.out.println();
@@ -228,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
 
     public interface PostRepo {
         //@Headers("Content-Type: application/json")
-        @POST("user/repos")
+        @POST("user/repos/access_token")
         Call<ResponseBody> createRepo(@Body RequestBody body,
                                 @Header("Authorization") String auth);
     }
