@@ -128,21 +128,21 @@ public class MainActivity extends AppCompatActivity {
                     .build();
             GitHubService service = retrofit.create(GitHubService.class);
             PostRepo postRepo = retrofit.create(PostRepo.class);
-            GetAuth getAuth = retrofit.create(GetAuth.class);
+            //GetAuth getAuth = retrofit.create(GetAuth.class);
 
-            String json = "{ \"name\": \"HEYWORK\", \"auto_init\": true, \"private\": false, \"gitignore_template\": \"nanoc\"}";
-            String au = "{ \"scopes\": [\"public_repo\"], \"note\": \"admin-script\" }";
+            String json = "{ \"name\": \"testoldurl\", \"auto_init\": true, \"private\": false, \"gitignore_template\": \"nanoc\"}";
+            //String au = "{ \"scopes\": [\"public_repo\"], \"note\": \"admin-script\" }";
 
             RequestBody rb = RequestBody.create(MediaType.parse("application/json"), json);
             System.out.println(AuthPrefs.ACCESS_TOKEN);
-            RequestBody rb2 = RequestBody.create(MediaType.parse("application/json"), au);
+            /*RequestBody rb2 = RequestBody.create(MediaType.parse("application/json"), au);
             Call<ResponseBody> getAuthCall = getAuth.getAuth(rb2, "token 3807d30b297c20dd78eaa56e065f6b2752d0c7cb");
             try {
                 Response rrr = getAuthCall.execute();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            */
             Call<ResponseBody> createRepoCall = postRepo.createRepo(rb, "token "+AuthPrefs.ACCESS_TOKEN);
 
             Call<ResponseBody> getProductsCall = service.getRepos(user, "token "+AuthPrefs.ACCESS_TOKEN);
@@ -252,11 +252,11 @@ public class MainActivity extends AppCompatActivity {
                                       @Header("Authorization") String auth);
     }
 
-    public interface GetAuth {
+   /* public interface GetAuth {
         @POST("authorizations")
         Call<ResponseBody> getAuth(@Body RequestBody body,
                                    @Header("Authorization") String auth);
-    }
+    }*/
 
 
 }

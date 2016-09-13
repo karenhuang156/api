@@ -38,7 +38,7 @@ public class OAuthActivity extends AppCompatActivity {
     public static String CALLBACK_URL = "http://127.0.0.1/";
     public static String CODE = "";
     public static final String SCOPE = "repo";
-    public static final String URL = OAUTH_URL + "?client_id=" + CLIENT_ID;
+    public static final String URL = OAUTH_URL + "?scope=repo&client_id=" + CLIENT_ID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,7 @@ public class OAuthActivity extends AppCompatActivity {
         webView.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                view.loadUrl("http://github.com/login/oauth/authorize?scope=repo&client_id=c318b3ca6bb70166e877");
+                view.loadUrl(URL);
                 return true;
             }
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -81,12 +81,8 @@ public class OAuthActivity extends AppCompatActivity {
                 }
 
             }
-
-
-
-
         });
-        webView.loadUrl("http://github.com/login/oauth/authorize?scope=repo&client_id=c318b3ca6bb70166e877");
+        webView.loadUrl(URL);
     }
 
     class getCodeTask extends AsyncTask<String, Void, String> {
