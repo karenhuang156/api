@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import okhttp3.MediaType;
+import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -127,8 +128,21 @@ public class MainActivity extends AppCompatActivity {
                     .build();
             GitHubService service = retrofit.create(GitHubService.class);
             PostRepo postRepo = retrofit.create(PostRepo.class);
-            String json = "{ \"name\": \"noheader\", \"auto_init\": true, \"private\": false, \"gitignore_template\": \"nanoc\"}";
+            GetAuth getAuth = retrofit.create(GetAuth.class);
+
+            String json = "{ \"name\": \"HEYWORK\", \"auto_init\": true, \"private\": false, \"gitignore_template\": \"nanoc\"}";
+            String au = "{ \"scopes\": [\"public_repo\"], \"note\": \"admin-script\" }";
+
             RequestBody rb = RequestBody.create(MediaType.parse("application/json"), json);
+            System.out.println(AuthPrefs.ACCESS_TOKEN);
+            RequestBody rb2 = RequestBody.create(MediaType.parse("application/json"), au);
+            Call<ResponseBody> getAuthCall = getAuth.getAuth(rb2, "token 3807d30b297c20dd78eaa56e065f6b2752d0c7cb");
+            try {
+                Response rrr = getAuthCall.execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             Call<ResponseBody> createRepoCall = postRepo.createRepo(rb, "token "+AuthPrefs.ACCESS_TOKEN);
 
             Call<ResponseBody> getProductsCall = service.getRepos(user, "token "+AuthPrefs.ACCESS_TOKEN);
@@ -136,8 +150,13 @@ public class MainActivity extends AppCompatActivity {
             String response = "";
 
             try {
-                System.out.println("created repo");
+
+                Request req = createRepoCall.request();
+                RequestBody reqb = req.body();
+                System.out.println(req.headers().toString());
+                System.out.println("created repo using token "+AuthPrefs.ACCESS_TOKEN);
                 Response aaa = createRepoCall.execute();
+
                 //System.out.println(aaa.errorBody().string());
                 //ResponseBody rb = (ResponseBody)aaa.body();
 
@@ -230,7 +249,14 @@ public class MainActivity extends AppCompatActivity {
         //@Headers("Content-Type: application/json")
         @POST("user/repos")
         Call<ResponseBody> createRepo(@Body RequestBody body,
-                                @Header("Authorization") String auth);
+                                      @Header("Authorization") String auth);
     }
+
+    public interface GetAuth {
+        @POST("authorizations")
+        Call<ResponseBody> getAuth(@Body RequestBody body,
+                                   @Header("Authorization") String auth);
+    }
+
 
 }

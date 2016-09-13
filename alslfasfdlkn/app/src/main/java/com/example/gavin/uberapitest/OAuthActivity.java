@@ -10,6 +10,7 @@ import android.webkit.WebViewClient;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,6 +22,8 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.Body;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
@@ -31,9 +34,10 @@ public class OAuthActivity extends AppCompatActivity {
     public static String OAUTH_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token/";
 
     public static String CLIENT_ID = "c318b3ca6bb70166e877";
-    public static String CLIENT_SECRET = "f54ac3c76cc77e5a5cd7b1e6a1e9b6f7ade301b8";
+    public static String CLIENT_SECRET = "b2fd72d852872141163077e89d19d40bd42c5295";
     public static String CALLBACK_URL = "http://127.0.0.1/";
     public static String CODE = "";
+    public static final String SCOPE = "repo";
     public static final String URL = OAUTH_URL + "?client_id=" + CLIENT_ID;
 
     @Override
@@ -46,7 +50,7 @@ public class OAuthActivity extends AppCompatActivity {
         webView.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                view.loadUrl(URL);
+                view.loadUrl("http://github.com/login/oauth/authorize?scope=repo&client_id=c318b3ca6bb70166e877");
                 return true;
             }
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -82,7 +86,7 @@ public class OAuthActivity extends AppCompatActivity {
 
 
         });
-        webView.loadUrl(URL);
+        webView.loadUrl("http://github.com/login/oauth/authorize?scope=repo&client_id=c318b3ca6bb70166e877");
     }
 
     class getCodeTask extends AsyncTask<String, Void, String> {
@@ -91,15 +95,31 @@ public class OAuthActivity extends AppCompatActivity {
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("http://github.com/")
                     .build();
+
+            AddAuth addAuthService = retrofit.create(AddAuth.class);
+            Map<String, String> authData = new LinkedHashMap<>();
+            authData.put("scope", SCOPE);
+            authData.put("client_id",CLIENT_ID);
+            Call<ResponseBody> addAuthCall = addAuthService.authApp(authData);
+            try {
+                Response authRes = addAuthCall.execute();
+                ResponseBody authResBody = (ResponseBody)authRes.body();
+                System.out.println(authResBody.string());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             PostCode postCodeService = retrofit.create(PostCode.class);
            // String request = "{ \"code\":"+AuthPrefs.CODE+"\", \"client_id\":\""+CLIENT_ID+"\", \"client_secret\":\""+CLIENT_SECRET+"\" }";
             //RequestBody rb = RequestBody.create(MediaType.parse("application/json"), request);
-            Map<String, String> data = new HashMap<>();
+            Map<String, String> data = new LinkedHashMap<>();
             data.put("code",CODE);
             data.put("client_secret",CLIENT_SECRET);
             data.put("client_id",CLIENT_ID);
+            data.put("scope", SCOPE);
 
             System.out.println(data.toString());
+            String scopes = "repo";
             Call<ResponseBody> postCodeCall = postCodeService.getToken(data);
             String response = "";
             try {
@@ -108,10 +128,12 @@ public class OAuthActivity extends AppCompatActivity {
                 a = (ResponseBody)s.body();
                 response = a.string();
                 System.out.println(response);
+
                 Pattern codePattern = Pattern.compile("=(.*?)&");
                 Matcher codeMatcher = codePattern.matcher(response);
                 codeMatcher.find();
                 String access = codeMatcher.group(1);
+
                 AuthPrefs.ACCESS_TOKEN = access;
                 System.out.println(AuthPrefs.ACCESS_TOKEN);
             } catch (IOException e) {
@@ -127,9 +149,16 @@ public class OAuthActivity extends AppCompatActivity {
         }
     }
     public interface PostCode {
+
+        @Headers("X-OAuth-Scopes: repo")
         @POST("login/oauth/access_token")
         Call<ResponseBody> getToken(@QueryMap(encoded=true) Map<String,String> params);
-
     }
+
+    public interface AddAuth {
+        @POST("login/oauth/authorize")
+        Call<ResponseBody> authApp(@QueryMap(encoded = true) Map<String,String> params);
+    }
+
 
 }
