@@ -32,6 +32,7 @@
         android:id="@+id/b_go"
         android:layout_width="80dp"
         android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
         android:gravity="center"
         android:text="Search"
         android:textColor="#FFFFFF"

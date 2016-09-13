@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
         input = (EditText)findViewById(R.id.et_user);
         button = (Button)findViewById(R.id.b_go);
         spinner = (ProgressBar)findViewById(R.id.pb_spin);
-        Button logButton = (Button)findViewById(R.id.b_log);
 
         spinner.setVisibility(View.GONE);
         logButton.setOnClickListener(new View.OnClickListener() {
@@ -83,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), OAuthActivity.class);
                 startActivity(intent);
+                logButton.setVisibility(View.GONE);
             }
         });
         button.setOnClickListener(new View.OnClickListener() {
@@ -130,8 +130,13 @@ public class MainActivity extends AppCompatActivity {
             PostRepo postRepo = retrofit.create(PostRepo.class);
             //GetAuth getAuth = retrofit.create(GetAuth.class);
 
+<<<<<<< HEAD
             String json = "{ \"name\": \"testoldurl\", \"auto_init\": true, \"private\": false, \"gitignore_template\": \"nanoc\"}";
             //String au = "{ \"scopes\": [\"public_repo\"], \"note\": \"admin-script\" }";
+=======
+            String json = "{ \"name\": \"NEWREPO\", \"auto_init\": true, \"private\": false, \"gitignore_template\": \"nanoc\"}";
+            String au = "{ \"scopes\": [\"public_repo\"], \"note\": \"admin-script\" }";
+>>>>>>> githubworks-130916
 
             RequestBody rb = RequestBody.create(MediaType.parse("application/json"), json);
             System.out.println(AuthPrefs.ACCESS_TOKEN);
